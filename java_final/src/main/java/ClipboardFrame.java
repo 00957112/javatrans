@@ -34,7 +34,7 @@ public class ClipboardFrame  extends JFrame implements ClipboardHandler.EntryLis
     @Override
     public void onCopy(String data){
         try {
-            data=Translator.translate(data);
+            data=Translator2.translate2(data);
         }catch (Exception e){
             e.printStackTrace();
         }
@@ -44,7 +44,6 @@ public class ClipboardFrame  extends JFrame implements ClipboardHandler.EntryLis
 
     public static  void main(String[] args) {
         ClipboardFrame test=new ClipboardFrame();
-        System.out.println("fin");
 
     }
 
