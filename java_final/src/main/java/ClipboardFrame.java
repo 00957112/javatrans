@@ -39,7 +39,7 @@ public class ClipboardFrame  extends JFrame implements ClipboardHandler.EntryLis
     @Override
     public void onCopy(String data){
         try {
-            data=Translator2.translate2(data);
+            data=Translator2.translate2(data);//翻譯
         }catch (Exception e){
             e.printStackTrace();
         }
