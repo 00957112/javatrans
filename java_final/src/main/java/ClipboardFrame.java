@@ -13,13 +13,18 @@ public class ClipboardFrame  extends JFrame implements ClipboardHandler.EntryLis
 
     //build frame & register listener
     public ClipboardFrame(){
+        //UI內容設定
         text=new JTextArea("aaaa",100,300);
         text.setFont(new Font("Consolos", Font.PLAIN, 20));
         text.setLineWrap(true);
         add(text);
+
+        //UI frame設定
         this.setSize(800,200);
         this.setVisible(true);
         this.setAlwaysOnTop(true);
+
+        //全域滑鼠事件設定
         GlobalListener.preAssignment();
         ClipboardHandler handler=new ClipboardHandler();
         handler.setEntryListener(this);
