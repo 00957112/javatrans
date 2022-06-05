@@ -71,12 +71,12 @@ public class Translator2 {
             return null;
         }
         public static String translate2(String str){
-            Translator2 translator = new Translator2("AIzaSyBumjL9Znh_Rh0u_-ffNpl9wfF3MQOM3yc");
+            Translator2 translator = new Translator2("會計費的阿化計費的阿阿阿阿阿阿");
             return translator.translte(str, "en", "zh-TW");
         }
         public static void main(String[] args) {
 
-            Translator2 translator = new Translator2("AIzaSyBumjL9Znh_Rh0u_-ffNpl9wfF3MQOM3yc");
+            Translator2 translator = new Translator2("會計費的阿化計費的阿阿阿阿阿阿");
             String text = translator.translte("pear", "en", "zh-TW");
             System.out.println(text);//結果
         }
