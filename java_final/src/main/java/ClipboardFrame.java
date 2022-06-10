@@ -24,8 +24,7 @@ public class ClipboardFrame  extends JFrame implements ClipboardHandler.EntryLis
         this.setVisible(true);
         this.setAlwaysOnTop(true);
 
-        //全域滑鼠事件設定
-        GlobalListener.preAssignment();
+
         ClipboardHandler handler=new ClipboardHandler();
         handler.setEntryListener(this);
         handler.run();
@@ -47,9 +46,24 @@ public class ClipboardFrame  extends JFrame implements ClipboardHandler.EntryLis
     }
 
 
-    public static  void main(String[] args) {
+    public static void main(String[] args) {//how to use
         ClipboardFrame test=new ClipboardFrame();
-
+        test.start();
+        try{
+        Thread.sleep(20000);//20秒後關閉
+        test.close();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+    public void start(){//開啟
+        //全域滑鼠事件設定
+        GlobalListener.preAssignment();
+        setVisible(true);
+    }
+    public void close(){//關閉
+        GlobalListener.close();
+        this.setVisible(false);
     }
 
 

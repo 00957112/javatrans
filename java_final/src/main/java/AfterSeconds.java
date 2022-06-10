@@ -12,6 +12,8 @@ abstract public class AfterSeconds implements NativeMouseInputListener {//單字
 
     abstract void unToDo();
     abstract void setToDo();
+
+    private AfterSeconds afterSeconds;
     public void nativeMouseClicked(NativeMouseEvent e) {
             unToDo();
 
@@ -53,7 +55,16 @@ abstract public class AfterSeconds implements NativeMouseInputListener {//單字
         // Add the appropriate listeners.
         GlobalScreen.addNativeMouseListener(example);
         GlobalScreen.addNativeMouseMotionListener(example);
+        afterSeconds=example;
         //setToDo();
+    }
+    public void close(){
+        try{
+        GlobalScreen.removeNativeMouseListener(afterSeconds);
+        GlobalScreen.removeNativeMouseMotionListener(afterSeconds);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
     public static <GlobalMouseListenerExample> void main(String[] args) {
         //preAssignment();

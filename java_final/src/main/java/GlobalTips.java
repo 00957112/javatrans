@@ -27,7 +27,7 @@ public class GlobalTips extends JFrame implements ClipboardHandler.EntryListener
 
     @Override
     public void onCopy(String data){
-        if(handler.transletable()){
+        if(handler.transletable()&&!data.equals("")){
             try {
                 data=Translator2.translate2(data);//翻譯
             }catch (Exception e){
@@ -49,22 +49,39 @@ public class GlobalTips extends JFrame implements ClipboardHandler.EntryListener
         setLocation(650,350);
 
         //UI內容設定
-        aaa=new JTextArea("---",10,20);
+        aaa=new JTextArea("---",7,15);
+        aaa.setLineWrap(true);
         Border border = BorderFactory.createLineBorder(new Color(230,200,0,255),5);
+        aaa.setFont(new Font("Consolas", Font.PLAIN, 20));
         aaa.setBorder(BorderFactory.createCompoundBorder(border,
                 BorderFactory.createEmptyBorder(10, 10, 10, 10)));
         add(aaa);
         pack();
 
-        //全域滑鼠事件設定
-        doIt.preAssignment(doIt);
-        handler.setEntryListener(this);
-
         handler.run();
 
     }
-    public static void main(String[] args) {
+    public static void main(String[] args) {//how to use
+
         GlobalTips ma = new GlobalTips();
+        ma.start();
+        try{
+            Thread.sleep(20000);//20秒後關閉
+            ma.close();
+            System.out.println("--end");
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public void start(){//開啟
+        //全域滑鼠事件設定
+        doIt.preAssignment(doIt);
+        handler.setEntryListener(this);
+    }
+    public void close(){//關閉
+        doIt.close();
+        this.setVisible(false);
     }
 class DoIt extends AfterSeconds{//自動複製
 
@@ -76,7 +93,7 @@ class DoIt extends AfterSeconds{//自動複製
     @Override
     void setToDo() {
         timer=new Timer();
-        super.timer.schedule(new toDo(),3000);
+        super.timer.schedule(new toDo(),2000);
     }
 }
 

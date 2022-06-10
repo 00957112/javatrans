@@ -10,6 +10,7 @@ public class GlobalListener implements NativeMouseInputListener {
     protected Timer timer;
     private TimerTask showtime;
     private static int sec=0;
+    private static GlobalListener example;
 
     public boolean ctrlC(){
         try {
@@ -18,6 +19,7 @@ public class GlobalListener implements NativeMouseInputListener {
             robot.keyPress(67);
             robot.keyRelease(17);
             robot.keyRelease(67);
+            System.out.println("yyy");
             return  true;
         }catch (Exception e){
             e.printStackTrace();
@@ -37,8 +39,8 @@ public class GlobalListener implements NativeMouseInputListener {
                 ctrlC();
             }
         };
-        if(showtime!=null)timer.schedule(showtime,3000);
-        //System.out.println("Mouse Pressed: " + e.getButton());
+        if(showtime!=null)timer.schedule(showtime,2000);
+        System.out.println("Mouse Pressed: " + e.getButton());
     }
 
     public void nativeMouseReleased(NativeMouseEvent e) {
@@ -66,10 +68,18 @@ public class GlobalListener implements NativeMouseInputListener {
             System.exit(1);
         }
         // Construct the example object.
-        GlobalListener example = new GlobalListener();
+        example = new GlobalListener();
         // Add the appropriate listeners.
         GlobalScreen.addNativeMouseListener(example);
         GlobalScreen.addNativeMouseMotionListener(example);
+    }
+    public static void close(){
+        try{
+            GlobalScreen.removeNativeMouseMotionListener(example);
+            GlobalScreen.removeNativeMouseListener(example);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
     public static <GlobalMouseListenerExample> void main(String[] args) {
         preAssignment();
