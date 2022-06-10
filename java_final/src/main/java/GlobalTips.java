@@ -8,6 +8,9 @@ public class GlobalTips extends JFrame implements ClipboardHandler.EntryListener
     private JTextArea aaa;//小框框內容
 
     private DoIt doIt=new DoIt();
+
+    private boolean open=false;
+
     class toDo extends TimerTask{//自動複製
         @Override
         public void run() {
@@ -33,6 +36,8 @@ public class GlobalTips extends JFrame implements ClipboardHandler.EntryListener
             }catch (Exception e){
                 e.printStackTrace();
             }
+            System.out.println("--Translated");
+            if(!open)return;
             aaa.setText(data);
             if(aaa.getText().equals(""))setVisible(false);
             else  {
@@ -62,11 +67,20 @@ public class GlobalTips extends JFrame implements ClipboardHandler.EntryListener
 
     }
     public static void main(String[] args) {//how to use
+        //long s=System.currentTimeMillis();    #debug用計時器
+        //Timer timer=new Timer();
+        //timer.schedule(new TimerTask() {
+        //    @Override
+        //    public void run() {
+        //        System.out.println(System.currentTimeMillis()-s);
+        //    }
+        //},0,1000);
+
 
         GlobalTips ma = new GlobalTips();
         ma.start();
         try{
-            Thread.sleep(20000);//20秒後關閉
+            Thread.sleep(10000);//20秒後關閉
             ma.close();
             System.out.println("--end");
         }catch (Exception e){
@@ -75,18 +89,22 @@ public class GlobalTips extends JFrame implements ClipboardHandler.EntryListener
     }
 
     public void start(){//開啟
+        open=true;
         //全域滑鼠事件設定
         doIt.preAssignment(doIt);
         handler.setEntryListener(this);
     }
     public void close(){//關閉
+        open=false;
         doIt.close();
-        this.setVisible(false);
+        doIt.unToDo();
+        doIt.timer.cancel();
+        //System.out.println("--close"+this.isVisible());
     }
 class DoIt extends AfterSeconds{//自動複製
 
     @Override
-    void unToDo() {
+     void unToDo() {
         setVisible(false);
         aaa.setText("");
     }

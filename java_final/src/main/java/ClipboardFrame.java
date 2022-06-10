@@ -11,6 +11,8 @@ public class ClipboardFrame  extends JFrame implements ClipboardHandler.EntryLis
     private static Clipboard clip=Toolkit.getDefaultToolkit().getSystemClipboard();
     private final Scanner input=new Scanner(System.in);
 
+    private boolean open=false;
+
     //build frame & register listener
     public ClipboardFrame(){
         //UI內容設定
@@ -42,6 +44,7 @@ public class ClipboardFrame  extends JFrame implements ClipboardHandler.EntryLis
         }catch (Exception e){
             e.printStackTrace();
         }
+        if(!open)return;
         text.setText(data);
     }
 
@@ -57,11 +60,13 @@ public class ClipboardFrame  extends JFrame implements ClipboardHandler.EntryLis
         }
     }
     public void start(){//開啟
+        open=true;
         //全域滑鼠事件設定
         GlobalListener.preAssignment();
         setVisible(true);
     }
     public void close(){//關閉
+        open=false;
         GlobalListener.close();
         this.setVisible(false);
     }
