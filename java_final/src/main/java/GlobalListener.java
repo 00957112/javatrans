@@ -7,7 +7,7 @@ import  java.util.Timer;
 import  java.util.TimerTask;
 import java.awt.Robot;
 public class GlobalListener implements NativeMouseInputListener {
-    protected Timer timer;
+    protected static Timer timer;
     private TimerTask showtime;
     private static int sec=0;
     private static GlobalListener example;
@@ -58,30 +58,30 @@ public class GlobalListener implements NativeMouseInputListener {
         sec=0;
         //System.out.println("Mouse Dragged: " + e.getX() + ", " + e.getY());
     }
-    public static void preAssignment(){
-        try {
-            GlobalScreen.registerNativeHook();
-        }
-        catch (NativeHookException ex) {
-            System.err.println("There was a problem registering the native hook.");
-            System.err.println(ex.getMessage());
-            System.exit(1);
-        }
+    public void preAssignment(){
+        //try {                                   ///**********must!!!!!
+        //    GlobalScreen.registerNativeHook();
+        //}
+        //catch (NativeHookException ex) {
+        //    System.err.println("There was a problem registering the native hook.");
+        //    System.err.println(ex.getMessage());
+        //    System.exit(1);
+        //}
         // Construct the example object.
-        example = new GlobalListener();
         // Add the appropriate listeners.
-        GlobalScreen.addNativeMouseListener(example);
-        GlobalScreen.addNativeMouseMotionListener(example);
+        GlobalScreen.addNativeMouseListener(this);
+        GlobalScreen.addNativeMouseMotionListener(this);
     }
-    public static void close(){
+    public void close(){
         try{
-            GlobalScreen.removeNativeMouseMotionListener(example);
-            GlobalScreen.removeNativeMouseListener(example);
+            GlobalScreen.removeNativeMouseMotionListener(this);
+            GlobalScreen.removeNativeMouseListener(this);
+            timer.cancel();
         }catch (Exception e){
             e.printStackTrace();
         }
     }
     public static <GlobalMouseListenerExample> void main(String[] args) {
-        preAssignment();
+
     }
 }

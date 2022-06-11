@@ -7,7 +7,7 @@ import java.util.TimerTask;
 public class GlobalTips extends JFrame implements ClipboardHandler.EntryListener{//單字模式小框框
     private JTextArea aaa;//小框框內容
 
-    private DoIt doIt=new DoIt();
+    private DoIt doIt;
 
     private boolean open=false;
 
@@ -63,7 +63,7 @@ public class GlobalTips extends JFrame implements ClipboardHandler.EntryListener
         add(aaa);
         pack();
 
-        handler.run();
+
 
     }
     public static void main(String[] args) {//how to use
@@ -80,7 +80,7 @@ public class GlobalTips extends JFrame implements ClipboardHandler.EntryListener
         GlobalTips ma = new GlobalTips();
         ma.start();
         try{
-            Thread.sleep(10000);//20秒後關閉
+            Thread.sleep(30000);//20秒後關閉
             ma.close();
             System.out.println("--end");
         }catch (Exception e){
@@ -91,29 +91,34 @@ public class GlobalTips extends JFrame implements ClipboardHandler.EntryListener
     public void start(){//開啟
         open=true;
         //全域滑鼠事件設定
-        doIt.preAssignment(doIt);
+        doIt=new DoIt();
+        doIt.preAssignment();
         handler.setEntryListener(this);
+        handler.run();
     }
     public void close(){//關閉
+        handler.mode=true;
+        try{
         open=false;
         doIt.close();
         doIt.unToDo();
         doIt.timer.cancel();
+
+        }catch (Exception e){e.printStackTrace();}
         //System.out.println("--close"+this.isVisible());
     }
-class DoIt extends AfterSeconds{//自動複製
+    class DoIt extends AfterSeconds{//自動複製
 
-    @Override
-     void unToDo() {
-        setVisible(false);
-        aaa.setText("");
+        @Override
+        void unToDo() {
+            setVisible(false);
+            aaa.setText("");
+        }
+        @Override
+        void setToDo() {
+            timer=new Timer();
+            super.timer.schedule(new toDo(),2000);
+        }
     }
-    @Override
-    void setToDo() {
-        timer=new Timer();
-        super.timer.schedule(new toDo(),2000);
-    }
-}
 
 }
-

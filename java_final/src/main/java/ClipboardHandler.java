@@ -9,6 +9,8 @@ public class ClipboardHandler implements ClipboardOwner {
     }
     private Clipboard clipboard=Toolkit.getDefaultToolkit().getSystemClipboard();
     private Transferable transferable;
+
+    public boolean mode=true;
     private  EntryListener entryListener;
 
     private boolean toTranslet=false;
@@ -19,6 +21,10 @@ public class ClipboardHandler implements ClipboardOwner {
         this.entryListener=entryListener;
     }
     @Override  public void lostOwnership(Clipboard clipboard,Transferable content){
+        if(mode){
+            System.out.print("===");
+            return;
+        }
         try{
             Thread.sleep(200);
             System.out.println((String) this.clipboard.getData(DataFlavor.stringFlavor));
@@ -52,8 +58,10 @@ public class ClipboardHandler implements ClipboardOwner {
     }
 
     public void  run(){
+        mode=false;
         Transferable t=clipboard.getContents(this);
         regainOwnership(t);
+
         //while (true);
     }
 

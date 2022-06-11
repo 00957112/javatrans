@@ -1,3 +1,6 @@
+import com.github.kwhat.jnativehook.GlobalScreen;
+import com.github.kwhat.jnativehook.NativeHookException;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
@@ -10,9 +13,9 @@ public class ClipboardFrame  extends JFrame implements ClipboardHandler.EntryLis
     private final JTextArea text;
     private static Clipboard clip=Toolkit.getDefaultToolkit().getSystemClipboard();
     private final Scanner input=new Scanner(System.in);
-
+    private  GlobalListener globalListener;
     private boolean open=false;
-
+    private ClipboardHandler handler;
     //build frame & register listener
     public ClipboardFrame(){
         //UI內容設定
@@ -27,9 +30,8 @@ public class ClipboardFrame  extends JFrame implements ClipboardHandler.EntryLis
         this.setAlwaysOnTop(true);
 
 
-        ClipboardHandler handler=new ClipboardHandler();
-        handler.setEntryListener(this);
-        handler.run();
+        handler=new ClipboardHandler();
+
     }
 
     public void copyToClipboard(String val){
@@ -50,25 +52,41 @@ public class ClipboardFrame  extends JFrame implements ClipboardHandler.EntryLis
 
 
     public static void main(String[] args) {//how to use
+        try {                                   ///**********must!!!!!
+            GlobalScreen.registerNativeHook();
+        }
+        catch (NativeHookException ex) {
+            System.err.println("There was a problem registering the native hook.");
+            System.err.println(ex.getMessage());
+            System.exit(1);
+        }
         ClipboardFrame test=new ClipboardFrame();
         test.start();
         try{
         Thread.sleep(20000);//20秒後關閉
         test.close();
+        System.out.println("--end");
         }catch (Exception e){
             e.printStackTrace();
         }
     }
     public void start(){//開啟
         open=true;
+        handler.setEntryListener(this);
+        handler.run();
         //全域滑鼠事件設定
-        GlobalListener.preAssignment();
+        globalListener=new GlobalListener();
+        globalListener.preAssignment();
         setVisible(true);
     }
     public void close(){//關閉
+        handler.mode=true;
+        try {
         open=false;
-        GlobalListener.close();
+        globalListener.close();
         this.setVisible(false);
+
+        }catch (Exception e){}
     }
 
 
