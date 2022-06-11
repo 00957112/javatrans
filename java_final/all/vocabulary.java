@@ -16,6 +16,14 @@ import javax.net.ssl.HttpsURLConnection;
 public class vocabulary {
     public vocabulary(){}
     static String voca(String text) throws UnsupportedEncodingException {
+        for(int i=0;i<text.length();i++)
+        {
+            if(text.charAt(i)>='A'&&text.charAt(i)<='z') {
+                continue;
+            }
+            else return "抓的不是單字,請重選一次";
+        }
+        System.out.println(text);
         String ans="";
         try
         {
@@ -41,7 +49,7 @@ public class vocabulary {
                 id++;
             }}
             catch (IndexOutOfBoundsException eee){//終止例外
-               ans+="end";//可換
+                ans+="end";//可換
             }
             System.out.println(ans);
             return ans;
