@@ -8,12 +8,15 @@ import java.util.TimerTask;
 
 abstract public class AfterSeconds implements NativeMouseInputListener {//單字模式小框框全域滑鼠事件
     protected Timer timer;
-    boolean close=false;
 
     abstract void unToDo();
     abstract void setToDo();
 
     private AfterSeconds afterSeconds;
+
+    public AfterSeconds(){
+
+    }
     public void nativeMouseClicked(NativeMouseEvent e) {
         unToDo();
 
@@ -42,26 +45,21 @@ abstract public class AfterSeconds implements NativeMouseInputListener {//單字
         //timer.cancel();
         //System.out.println("Mouse Dragged: " + e.getX() + ", " + e.getY());
     }
-    public void preAssignment(AfterSeconds example){
-        try {
-            GlobalScreen.registerNativeHook();
-        }
-        catch (NativeHookException ex) {
-            System.err.println("There was a problem registering the native hook.");
-            System.err.println(ex.getMessage());
-            System.exit(1);
-        }
+    public void preAssignment(){
+
         // Construct the example object.
         // Add the appropriate listeners.
-        GlobalScreen.addNativeMouseListener(example);
-        GlobalScreen.addNativeMouseMotionListener(example);
-        afterSeconds=example;
+        GlobalScreen.addNativeMouseListener(this);
+        GlobalScreen.addNativeMouseMotionListener(this);
+        afterSeconds=this;
         //setToDo();
     }
     public void close(){
         try{
+
             GlobalScreen.removeNativeMouseListener(afterSeconds);
             GlobalScreen.removeNativeMouseMotionListener(afterSeconds);
+
         }catch (Exception e){
             e.printStackTrace();
         }
