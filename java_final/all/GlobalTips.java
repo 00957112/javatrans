@@ -1,13 +1,20 @@
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
+import java.io.FileNotFoundException;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Formatter;
+import java.util.FormatterClosedException;
 import java.util.Timer;
 import java.util.TimerTask;
 
 public class GlobalTips extends JFrame implements ClipboardHandler.EntryListener{//單字模式小框框
     private JTextArea aaa;//小框框內容
-
-    private DoIt doIt=new DoIt();
+    private static Formatter output;
+    private DoIt doIt;
 
     private boolean open=false;
 
@@ -30,14 +37,20 @@ public class GlobalTips extends JFrame implements ClipboardHandler.EntryListener
 
     @Override
     public void onCopy(String data){
+        String s="";
         if(handler.transletable()&&!data.equals("")){
             try {
-                data=vocabulary.voca(data);//翻譯
+                s=vocabulary.voca(data);//翻譯
             }catch (Exception e){
                 e.printStackTrace();
             }
-            aaa.setFont(new Font("標楷體", Font.PLAIN, 14));
-            aaa.setText(data);
+            System.out.println("--Translated");
+            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yy/MM/dd HH:mm:ss");
+            openFile();
+            addRecords(dtf.format(LocalDateTime.now())+'\n'+data+'\n'+s+'\n'+'\n'); // play 2000 games of craps
+            closeFile();
+            if(!open)return;
+            aaa.setText(s);
             if(aaa.getText().equals(""))setVisible(false);
             else  {
                 setLocation(MouseInfo.getPointerInfo().getLocation().x,MouseInfo.getPointerInfo().getLocation().y);
@@ -56,13 +69,13 @@ public class GlobalTips extends JFrame implements ClipboardHandler.EntryListener
         aaa=new JTextArea("---",7,15);
         aaa.setLineWrap(true);
         Border border = BorderFactory.createLineBorder(new Color(230,200,0,255),5);
-        aaa.setFont(new Font("Consolas", Font.PLAIN, 20));
+        aaa.setFont(new Font("標楷體", Font.PLAIN, 20));
         aaa.setBorder(BorderFactory.createCompoundBorder(border,
                 BorderFactory.createEmptyBorder(10, 10, 10, 10)));
         add(aaa);
         pack();
 
-        handler.run();
+
 
     }
     public static void main(String[] args) {//how to use
@@ -78,26 +91,32 @@ public class GlobalTips extends JFrame implements ClipboardHandler.EntryListener
 
         GlobalTips ma = new GlobalTips();
         ma.start();
-        try{
-            Thread.sleep(10000);//20秒後關閉
+        /*try{
+            Thread.sleep(30000);//20秒後關閉
             ma.close();
             System.out.println("--end");
         }catch (Exception e){
             e.printStackTrace();
-        }
+        }*/
     }
 
     public void start(){//開啟
         open=true;
         //全域滑鼠事件設定
-        doIt.preAssignment(doIt);
+        doIt=new DoIt();
+        doIt.preAssignment();
         handler.setEntryListener(this);
+        handler.run();
     }
     public void close(){//關閉
-        open=false;
-        doIt.close();
-        doIt.unToDo();
-        doIt.timer.cancel();
+        handler.mode=true;
+        try{
+            open=false;
+            doIt.close();
+            doIt.unToDo();
+            doIt.timer.cancel();
+
+        }catch (Exception e){e.printStackTrace();}
         //System.out.println("--close"+this.isVisible());
     }
     class DoIt extends AfterSeconds{//自動複製
@@ -113,5 +132,39 @@ public class GlobalTips extends JFrame implements ClipboardHandler.EntryListener
             super.timer.schedule(new toDo(),2000);
         }
     }
+    public static void openFile()
+    {
+        try {
+            FileWriter fw = new FileWriter("vocabulary", true);
+            output = new Formatter(fw);
+        } catch (SecurityException securityException) {
+            System.err.println("Write permission denied. Terminating.");
+            System.exit(1); // terminate the program
+        } catch (FileNotFoundException fileNotFoundException) {
+            System.err.println("Error opening file. Terminating.");
+            System.exit(1); // terminate the program
+        } catch (IOException e) {
+            System.err.println("I/O error. Terminating.");
+            System.exit(1); // terminate the program
+        }
+    }
 
+    // add records to file
+    public static void addRecords(String s)
+    {
+        try {
+            // output new record to file; assumes valid input
+            // TODO
+            output.format("%s",s);
+        } catch (FormatterClosedException formatterClosedException) {
+            System.err.println("Error writing to file. Terminating.");
+        }
+    }
+
+    // close file
+    public static void closeFile()
+    {
+        if (output != null)
+            output.close();
+    }
 }
