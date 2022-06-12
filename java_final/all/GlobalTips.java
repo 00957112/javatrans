@@ -15,6 +15,7 @@ public class GlobalTips extends JFrame implements ClipboardHandler.EntryListener
     private JTextArea aaa;//小框框內容
     private static Formatter output;
     private DoIt doIt;
+    JScrollPane scroll;
 
     private boolean open=false;
 
@@ -41,19 +42,25 @@ public class GlobalTips extends JFrame implements ClipboardHandler.EntryListener
         if(handler.transletable()&&!data.equals("")){
             try {
                 s=vocabulary.voca(data);//翻譯
-            }catch (Exception e){
-                e.printStackTrace();
+            }catch (Exception e){               e.printStackTrace();
             }
             System.out.println("--Translated");
             DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yy/MM/dd HH:mm:ss");
+            Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
             openFile();
-            addRecords(dtf.format(LocalDateTime.now())+'\n'+data+'\n'+s+'\n'+'\n'); // play 2000 games of craps
+            if(s!="抓的不是單字或選取到不是字母的符號,請重新選一次。")
+                addRecords(dtf.format(LocalDateTime.now())+'\n'+data+'\n'+s+'\n'+'\n'); // play 2000 games of craps
+            else addRecords(dtf.format(LocalDateTime.now())+'\n'+s+'\n'+'\n');
             closeFile();
             if(!open)return;
             aaa.setText(s);
+            double x=MouseInfo.getPointerInfo().getLocation().x;
+            double y=MouseInfo.getPointerInfo().getLocation().y;
+            if(x+this.getWidth()>screenSize.getWidth())x=screenSize.getWidth()-this.getWidth();
+            if(y+this.getHeight()> screenSize.getHeight())y=screenSize.getHeight()-this.getHeight();
             if(aaa.getText().equals(""))setVisible(false);
             else  {
-                setLocation(MouseInfo.getPointerInfo().getLocation().x,MouseInfo.getPointerInfo().getLocation().y);
+                setLocation((int)x,(int)y);
                 setVisible(true);}
         }
     }
@@ -69,10 +76,15 @@ public class GlobalTips extends JFrame implements ClipboardHandler.EntryListener
         aaa=new JTextArea("---",7,15);
         aaa.setLineWrap(true);
         Border border = BorderFactory.createLineBorder(new Color(230,200,0,255),5);
-        aaa.setFont(new Font("標楷體", Font.PLAIN, 20));
+        aaa.setFont(new Font("標楷體", Font.PLAIN, 16));
         aaa.setBorder(BorderFactory.createCompoundBorder(border,
                 BorderFactory.createEmptyBorder(10, 10, 10, 10)));
-        add(aaa);
+        scroll = new JScrollPane(aaa);
+        this.getContentPane().add(scroll);
+        add(scroll);
+
+
+
         pack();
 
 
@@ -106,6 +118,8 @@ public class GlobalTips extends JFrame implements ClipboardHandler.EntryListener
         doIt=new DoIt();
         doIt.preAssignment();
         handler.setEntryListener(this);
+        //#小框框消失事件修正
+        aaa.addFocusListener(doIt);
         handler.run();
     }
     public void close(){//關閉
@@ -115,7 +129,8 @@ public class GlobalTips extends JFrame implements ClipboardHandler.EntryListener
             doIt.close();
             doIt.unToDo();
             doIt.timer.cancel();
-
+            //#小框框消失事件修正
+            aaa.removeFocusListener(doIt);
         }catch (Exception e){e.printStackTrace();}
         //System.out.println("--close"+this.isVisible());
     }
