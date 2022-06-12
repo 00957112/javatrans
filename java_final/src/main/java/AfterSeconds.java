@@ -3,11 +3,17 @@ import com.github.kwhat.jnativehook.NativeHookException;
 import com.github.kwhat.jnativehook.mouse.NativeMouseEvent;
 import com.github.kwhat.jnativehook.mouse.NativeMouseInputListener;
 
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.Timer;
 import java.util.TimerTask;
 
-abstract public class AfterSeconds implements NativeMouseInputListener {//單字模式小框框全域滑鼠事件
+abstract public class AfterSeconds implements NativeMouseInputListener,FocusListener {//單字模式小框框全域滑鼠事件
     protected Timer timer;
+
+    private boolean isSelect=false; //#小框框出現條件優化
 
     abstract void unToDo();
     abstract void setToDo();
@@ -17,9 +23,16 @@ abstract public class AfterSeconds implements NativeMouseInputListener {//單字
     public AfterSeconds(){
 
     }
-    public void nativeMouseClicked(NativeMouseEvent e) {
-            unToDo();
+    //#小框框消失事件修正-
 
+    @Override
+    public void focusGained(FocusEvent e){}
+    @Override
+    public void focusLost(FocusEvent e){
+        unToDo();
+    }
+    public void nativeMouseClicked(NativeMouseEvent e) {
+            //unToDo();
         //System.out.println("Mouse Clicked: " + e.getClickCount());
     }
 
@@ -30,19 +43,21 @@ abstract public class AfterSeconds implements NativeMouseInputListener {//單字
     }
 
     public void nativeMouseReleased(NativeMouseEvent e) {
-        setToDo();
+        //#小框框出現條件優化
+        if(isSelect){
+            setToDo();
+            isSelect=false;
+        }
         //System.out.println("Mouse Released: " + e.getButton());
     }
 
     public void nativeMouseMoved(NativeMouseEvent e) {
-        //if(timer!=null)timer.cancel();
-        unToDo();
-        //setToDo();
         //System.out.println("Mouse Moved: " + e.getX() + ", " + e.getY());
     }
-
+    //#小框框消失事件修正-選下一個消失 #小框框出現條件優化
     public void nativeMouseDragged(NativeMouseEvent e) {
-        //timer.cancel();
+        isSelect=true;
+        //unToDo();
         //System.out.println("Mouse Dragged: " + e.getX() + ", " + e.getY());
     }
     public void preAssignment(){
