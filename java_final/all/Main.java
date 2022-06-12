@@ -35,7 +35,7 @@ public class Main extends javax.swing.JFrame implements ActionListener {
                     ma.close();
 
                     test.start();
-                    panel.setBackground(new Color(0, 0, 0));//不選後要變成的背景顏色
+                    panel.setBackground(new Color(255, 255, 255));//不選後要變成的背景顏色
                 }
             }
         });
@@ -77,7 +77,7 @@ public class Main extends javax.swing.JFrame implements ActionListener {
         text2.setFont(new Font("Serif", Font.PLAIN, 14));
         text2.setEnabled(false);
         text2.setBackground(Color.WHITE);
-        String s="歡迎來到類即時翻譯器~此翻譯器有兩種模式!\n打開開關即為翻譯模式\n關閉開關即為單字模式";
+        String s="歡迎來到類即時翻譯器~此翻譯器有兩種模式!\n打開開關即為翻譯模式\n關閉開關即為單字模式\n點擊查詢紀錄可查看先前翻譯的結果";
         text2.setText(s);
         JPanel p1=new JPanel();
         JPanel p2=new JPanel();
