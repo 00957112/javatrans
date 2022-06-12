@@ -1,16 +1,18 @@
 import com.github.kwhat.jnativehook.GlobalScreen;
 import com.github.kwhat.jnativehook.NativeHookException;
-
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 import java.awt.*;
 import java.awt.Color;
 import javax.swing.*;
 
 
-public class Main extends javax.swing.JFrame {
+public class Main extends javax.swing.JFrame implements ActionListener {
 
     /**
      * Creates new form Main
      */
+    public static JButton b1;
     public Main() {
 
         super("類即時翻譯器");
@@ -49,6 +51,13 @@ public class Main extends javax.swing.JFrame {
         }
         //////////////
     }
+    @Override
+    public void actionPerformed(ActionEvent e)
+    {
+        if (e.getActionCommand().equals("查詢紀錄")) {
+            //把顯示紀錄的東東放這裡
+        }
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -61,7 +70,8 @@ public class Main extends javax.swing.JFrame {
 
         panel = new javax.swing.JPanel();
         switchButton2 = new switchbutton();
-
+        b1=new JButton("查詢紀錄");
+        b1.addActionListener(this);
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         JTextArea text2=new JTextArea();
         text2.setFont(new Font("Serif", Font.PLAIN, 14));
@@ -69,23 +79,29 @@ public class Main extends javax.swing.JFrame {
         text2.setBackground(Color.WHITE);
         String s="歡迎來到類即時翻譯器~此翻譯器有兩種模式!\n打開開關即為翻譯模式\n關閉開關即為單字模式";
         text2.setText(s);
-
+        JPanel p1=new JPanel();
+        JPanel p2=new JPanel();
+        p1.add(text2);
+        p1.add(b1);
+        p1.add(switchButton2);
         javax.swing.GroupLayout panelLayout = new javax.swing.GroupLayout(panel);
         panel.setLayout(panelLayout);
         panelLayout.setHorizontalGroup(
                 panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(panelLayout.createSequentialGroup()
                                 .addGap(10, 10, 10)//做起來像是調整框的水平大小
-                                .addComponent(text2,javax.swing.GroupLayout.PREFERRED_SIZE, 350, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(switchButton2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                //.addComponent(text2,javax.swing.GroupLayout.PREFERRED_SIZE, 350, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(p1,javax.swing.GroupLayout.PREFERRED_SIZE,  javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                //.addComponent(switchButton2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addContainerGap(0, Short.MAX_VALUE))//離容器邊界的距離??
         );
         panelLayout.setVerticalGroup(
                 panelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(panelLayout.createSequentialGroup()
                                 .addGap(5, 5, 5)//做起來像是調整框的垂直大小
-                                .addComponent(text2,javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(switchButton2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                //.addComponent(text2,javax.swing.GroupLayout.PREFERRED_SIZE, 70, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(p1,javax.swing.GroupLayout.PREFERRED_SIZE,  javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                //.addComponent(switchButton2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addContainerGap(0, Short.MAX_VALUE))//離容器邊界的距離??
         );
         //panelLayout.setAutoCreateContainerGaps(true);
