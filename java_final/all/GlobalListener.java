@@ -3,14 +3,18 @@ import com.github.kwhat.jnativehook.NativeHookException;
 import com.github.kwhat.jnativehook.mouse.NativeMouseEvent;
 import com.github.kwhat.jnativehook.mouse.NativeMouseInputListener;
 
+import java.awt.event.*;
 import  java.util.Timer;
 import  java.util.TimerTask;
 import java.awt.Robot;
-public class GlobalListener implements NativeMouseInputListener {
+public abstract class GlobalListener extends MouseAdapter implements NativeMouseInputListener, FocusListener {
     protected static Timer timer;
     private TimerTask showtime;
     private static int sec=0;
     private static GlobalListener example;
+
+    abstract void unToDo();
+    abstract void setToDo();
 
     public boolean ctrlC(){
         try {
@@ -27,56 +31,69 @@ public class GlobalListener implements NativeMouseInputListener {
         }
     }
 
+    private GlobalListener globalListener;
+    @Override
+    public void mouseClicked(MouseEvent e){
+        System.out.println("+");
+    }
+    @Override
+    public void focusGained(FocusEvent e){}
+    @Override
+    public void focusLost(FocusEvent e){
+        unToDo();
+        try{
+            timer.cancel();
+        }catch (Exception ex){
+            ex.printStackTrace();
+        }
+    }
+
     public void nativeMouseClicked(NativeMouseEvent e) {
-        //System.out.println("Mouse Clicked: " + e.getClickCount());
+        //unToDo();
+        System.out.println("Mouse Clicked: " + e.getClickCount());
     }
 
     public void nativeMousePressed(NativeMouseEvent e) {
-        timer=new Timer();
-        showtime= new TimerTask(){
-            @Override
-            public void run() {
-                ctrlC();
-            }
-        };
-        if(showtime!=null)timer.schedule(showtime,2000);
-        System.out.println("Mouse Pressed: " + e.getButton());
+        setToDo();
+        //if(showtime!=null)timer.schedule(,3000);
+        //System.out.println("Mouse Pressed: " + e.getButton());
     }
 
     public void nativeMouseReleased(NativeMouseEvent e) {
-        timer.cancel();
-        sec=0;
+        try{
+            timer.cancel();
+        }catch (Exception ex){
+            ex.printStackTrace();
+        }
         //System.out.println("Mouse Released: " + e.getButton());
     }
 
     public void nativeMouseMoved(NativeMouseEvent e) {
         //System.out.println("Mouse Moved: " + e.getX() + ", " + e.getY());
     }
-
     public void nativeMouseDragged(NativeMouseEvent e) {
-        timer.cancel();
-        sec=0;
+        //unToDo();
+        try{
+            timer.cancel();
+        }catch (Exception ex){
+            ex.printStackTrace();
+        }
         //System.out.println("Mouse Dragged: " + e.getX() + ", " + e.getY());
     }
     public void preAssignment(){
-        //try {                                   ///**********must!!!!!
-        //    GlobalScreen.registerNativeHook();
-        //}
-        //catch (NativeHookException ex) {
-        //    System.err.println("There was a problem registering the native hook.");
-        //    System.err.println(ex.getMessage());
-        //    System.exit(1);
-        //}
         // Construct the example object.
         // Add the appropriate listeners.
         GlobalScreen.addNativeMouseListener(this);
         GlobalScreen.addNativeMouseMotionListener(this);
+        globalListener=this;
+        //setToDo();
     }
     public void close(){
         try{
-            GlobalScreen.removeNativeMouseMotionListener(this);
-            GlobalScreen.removeNativeMouseListener(this);
-            timer.cancel();
+
+            GlobalScreen.removeNativeMouseListener(globalListener);
+            GlobalScreen.removeNativeMouseMotionListener(globalListener);
+
         }catch (Exception e){
             e.printStackTrace();
         }
