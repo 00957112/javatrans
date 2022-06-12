@@ -21,7 +21,7 @@ public class vocabulary {
             if(text.charAt(i)>='A'&&text.charAt(i)<='z') {
                 continue;
             }
-            else return "抓的不是單字,請重選一次";
+            else return "抓的不是單字或選取到不是字母的符號,請重新選一次。";
         }
         System.out.println(text);
         String ans="";
