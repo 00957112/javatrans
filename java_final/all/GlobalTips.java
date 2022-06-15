@@ -6,6 +6,8 @@ import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Paths;
@@ -16,7 +18,7 @@ import java.util.Timer;
 import java.util.Formatter;
 import java.util.Scanner;
 
-public class GlobalTips extends JFrame implements ClipboardHandler.EntryListener, ActionListener {//單字模式小框框
+public class GlobalTips extends JFrame implements ClipboardHandler.EntryListener, KeyListener {//單字模式小框框
     private JTextArea aaa;//小框框內容
     private static Formatter  output;
     private static FileWriter fw;
@@ -59,7 +61,7 @@ public class GlobalTips extends JFrame implements ClipboardHandler.EntryListener
             Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
             //openFile();
             //if(s!="抓的不是單字或選取到不是字母的符號,請重新選一次。")
-               // addRecords(dtf.format(LocalDateTime.now())+'\n'+data+'\n'+s+'\n'+'\n'); // play 2000 games of craps
+            // addRecords(dtf.format(LocalDateTime.now())+'\n'+data+'\n'+s+'\n'+'\n'); // play 2000 games of craps
             //else addRecords(dtf.format(LocalDateTime.now())+'\n'+s+'\n'+'\n');
             //closeFile();
             if(!open)return;
@@ -89,6 +91,7 @@ public class GlobalTips extends JFrame implements ClipboardHandler.EntryListener
         aaa.setFont(new Font("標楷體", Font.PLAIN, 18));
         aaa.setBorder(BorderFactory.createCompoundBorder(border,
                 BorderFactory.createEmptyBorder(10, 10, 10, 10)));
+        aaa.addKeyListener(this);
         scroll = new JScrollPane(aaa);
         this.getContentPane().add(scroll);
         add(scroll);
@@ -153,9 +156,10 @@ public class GlobalTips extends JFrame implements ClipboardHandler.EntryListener
         @Override
         void setToDo() {
             timer=new Timer();
-            super.timer.schedule(new toDo(),2000);
+            super.timer.schedule(new toDo(),1500);
         }
     }
+    /*
     @Override
     public void actionPerformed(ActionEvent e)
     {
@@ -179,12 +183,12 @@ public class GlobalTips extends JFrame implements ClipboardHandler.EntryListener
             /*if(s!="抓的不是單字或選取到不是字母的符號,請重新選一次。")
                 addtext(dtf.format(LocalDateTime.now())+'\n'+d+'\n'+s+'\n'+'\n'); // play 2000 games of craps
             else addtext(dtf.format(LocalDateTime.now())+'\n'+s+'\n'+'\n');*/
-            wclosefile();
+            /*wclosefile();
         }
-    }
+    }*/
     public static void wfileopen(String filename){//寫入開檔
         try {
-            fw = new FileWriter(filename, true);
+            fw = new FileWriter(filename, false);
             output = new Formatter(fw);
         }
         catch(IOException e){
@@ -215,5 +219,40 @@ public class GlobalTips extends JFrame implements ClipboardHandler.EntryListener
     public static void rclosefile(){//關閉讀出
         if (input != null)
             input.close();
+    }
+    @Override
+    public void keyTyped(KeyEvent keyEvent) {
+
+    }
+
+    @Override
+    public void keyPressed(KeyEvent keyEvent) {
+        if (keyEvent.isControlDown()&&keyEvent.getKeyCode()==83){
+            save();
+            System.out.println("ctrl");
+        }
+    }
+
+    @Override
+    public void keyReleased(KeyEvent keyEvent) {
+
+    }
+    public void save(){
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yy/MM/dd HH:mm:ss");
+        readfileopen("vocabulary.txt");
+        JSONObject string_to_json
+                =JSONObject.fromObject(readstr);
+        JSONObject json_to_data
+                = string_to_json.getJSONObject("data");//data層
+        //System.out.println(json_to_data);
+        JSONArray json_to_strings = json_to_data.getJSONArray("pages");//page Array層
+        JSONObject jsonobj=new JSONObject();//創新
+        jsonobj.accumulate("date",dtf.format(LocalDateTime.now()));
+        jsonobj.accumulate("eg",d);
+        jsonobj.accumulate("ch",s);
+        json_to_strings.add(jsonobj);//新增
+        wfileopen("vocabulary.txt");
+        addtext(string_to_json.toString()); // play 2000 games of craps
+        wclosefile();
     }
 }
