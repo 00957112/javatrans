@@ -1,30 +1,43 @@
 import com.github.kwhat.jnativehook.GlobalScreen;
 import com.github.kwhat.jnativehook.NativeHookException;
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
+import java.awt.*;
+import java.awt.Color;
+import javax.swing.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import javax.swing.*;
 import javax.swing.border.Border;
-import java.awt.*;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
-import java.lang.SecurityException;
+import net.sf.json.*;
 import java.util.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.util.Timer;
 
 
-public class ClipboardFrame  extends JFrame implements ClipboardHandler.EntryListener {
+public class ClipboardFrame  extends JFrame implements ClipboardHandler.EntryListener,ActionListener, KeyListener {
     public boolean isFirst=false;
-    private static Formatter output;
+    private static Formatter  output;
+    private static FileWriter fw;
+    private static Scanner input;
     private final JTextArea text;
     JScrollPane scroll;
     private static Clipboard clip=Toolkit.getDefaultToolkit().getSystemClipboard();
-    private final Scanner input=new Scanner(System.in);
     private  GlobalListener globalListener;
     private boolean open=false;
     private ClipboardHandler handler;
+    public static JButton b1;
+    public String s;
+    public String d;
+    public static String readstr;
+
+
 
     class toDo extends TimerTask {//自動複製
         @Override
@@ -45,21 +58,25 @@ public class ClipboardFrame  extends JFrame implements ClipboardHandler.EntryLis
     public ClipboardFrame(){
         //UI內容設定
         setUndecorated(true);
-
         text=new JTextArea("",100,300);
         text.setLineWrap(true);
         Border border = BorderFactory.createLineBorder(new Color(230,200,0,255),5);
-        text.setFont(new Font("Consolos", Font.PLAIN, 20));
+        text.setFont(new Font("標楷體", Font.PLAIN,18));
         text.setLineWrap(true);
+        //
+        text.addKeyListener(this);
         text.setBorder(BorderFactory.createCompoundBorder(border,
                 BorderFactory.createEmptyBorder(10, 10, 10, 10)));
         scroll = new JScrollPane(text);
-        this.getContentPane().add(scroll);
+        scroll.setSize(600,200);
+
+        //text.add(b1);
+        this.getContentPane().add(scroll,BorderLayout.CENTER);
 
         //UI frame設定
-        this.setSize(800,200);
+        this.setSize(650,200);
         this.setAlwaysOnTop(true);
-
+        //text.setEnabled(false);
 
         handler=new ClipboardHandler();
 
@@ -72,22 +89,50 @@ public class ClipboardFrame  extends JFrame implements ClipboardHandler.EntryLis
     }
     @Override
     public void onCopy(String data){
-        String s="";
+        s="";
+        d=data;
         try {
             s=Translator2.translate2(data);//翻譯
         }catch (Exception e){
             e.printStackTrace();
         }
+        //DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yy/MM/dd HH:mm:ss");
+        Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yy/MM/dd HH:mm:ss");
-        openFile();
-        addRecords(dtf.format(LocalDateTime.now())+'\n'+data+'\n'+s+'\n'+'\n'); // play 2000 games of craps
-        closeFile();
+        wfileopen("translation");
+        addtext(dtf.format(LocalDateTime.now())+'\n'+d+'\n'+s+'\n'+'\n'); // play 2000 games of craps
+        wclosefile();
         if(!open)return;
         text.setText(s);
-        setLocation(MouseInfo.getPointerInfo().getLocation().x,MouseInfo.getPointerInfo().getLocation().y);
+        double x=MouseInfo.getPointerInfo().getLocation().x;
+        double y=MouseInfo.getPointerInfo().getLocation().y;
+        if(x+this.getWidth()>screenSize.getWidth())x=screenSize.getWidth()-this.getWidth();
+        if(y+this.getHeight()> screenSize.getHeight())y=screenSize.getHeight()-this.getHeight();
+        setLocation((int)x,(int)y);
         setVisible(true);
     }
-
+    @Override
+    public void actionPerformed(ActionEvent e)
+    {
+        if (e.getActionCommand().equals("儲存")) {
+            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yy/MM/dd HH:mm:ss");
+            readfileopen("translation.txt");
+            JSONObject string_to_json
+                    =JSONObject.fromObject(readstr);
+            JSONObject json_to_data
+                    = string_to_json.getJSONObject("data");//data層
+            //System.out.println(json_to_data);
+            JSONArray json_to_strings = json_to_data.getJSONArray("pages");//page Array層
+            JSONObject jsonobj=new JSONObject();//創新
+            jsonobj.accumulate("date",dtf.format(LocalDateTime.now()));
+            jsonobj.accumulate("eg",d);
+            jsonobj.accumulate("ch",s);
+            json_to_strings.add(jsonobj);//新增
+            wfileopen("translation.txt");
+            addtext(string_to_json.toString()); // play 2000 games of craps
+            wclosefile();
+        }
+    }
 
     public static void main(String[] args) {//how to use
         try {                                   ///**********must!!!!!
@@ -131,33 +176,39 @@ public class ClipboardFrame  extends JFrame implements ClipboardHandler.EntryLis
         }catch (Exception e){}
     }
 
-    public static void openFile()
-    {
+    public static void wfileopen(String filename){//寫入開檔
         try {
-            FileWriter fw = new FileWriter("translation", true);
+            fw = new FileWriter(filename, true);
             output = new Formatter(fw);
-        } catch (SecurityException securityException) {
-            System.err.println("Write permission denied. Terminating.");
-            System.exit(1); // terminate the program
-        } catch (FileNotFoundException fileNotFoundException) {
-            System.err.println("Error opening file. Terminating.");
-            System.exit(1); // terminate the program
-        } catch (IOException e) {
-            System.err.println("I/O error. Terminating.");
-            System.exit(1); // terminate the program
+        }
+        catch(IOException e){
+            System.out.println(e);
         }
     }
-
-    // add records to file
-    public static void addRecords(String s)
-    {
+    public static void readfileopen(String filename){//讀出
         try {
-            // output new record to file; assumes valid input
-            // TODO
-            output.format("%s",s);
-        } catch (FormatterClosedException formatterClosedException) {
-            System.err.println("Error writing to file. Terminating.");
+            input = new Scanner(Paths.get(filename));
+            readstr=input.nextLine();
         }
+        catch(IOException e){
+            System.out.println(e);
+        }
+        //input.next();//格式
+        rclosefile();
+    }
+    public static void addtext(String context){//寫入
+        //System.out.println("add\n"+context);
+        output.format("%s",context);
+    }
+
+    public static void wclosefile(){//關閉寫入
+        if (output != null)
+            output.close();
+    }
+
+    public static void rclosefile(){//關閉讀出
+        if (input != null)
+            input.close();
     }
 
     class DoIt extends GlobalListener{//自動複製
@@ -174,10 +225,39 @@ public class ClipboardFrame  extends JFrame implements ClipboardHandler.EntryLis
     }
 
     // close file
-    public static void closeFile()
-    {
-        if (output != null)
-            output.close();
+    @Override
+    public void keyTyped(KeyEvent keyEvent) {
+
     }
 
+    @Override
+    public void keyPressed(KeyEvent keyEvent) {
+        if (keyEvent.isControlDown()&&keyEvent.getKeyCode()==83){
+            save();
+            System.out.println("ctrl");
+        }
+    }
+
+    @Override
+    public void keyReleased(KeyEvent keyEvent) {
+
+    }
+    public void save(){
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yy/MM/dd HH:mm:ss");
+        readfileopen("translation.txt");
+        JSONObject string_to_json
+                =JSONObject.fromObject(readstr);
+        JSONObject json_to_data
+                = string_to_json.getJSONObject("data");//data層
+        //System.out.println(json_to_data);
+        JSONArray json_to_strings = json_to_data.getJSONArray("pages");//page Array層
+        JSONObject jsonobj=new JSONObject();//創新
+        jsonobj.accumulate("date",dtf.format(LocalDateTime.now()));
+        jsonobj.accumulate("eg",d);
+        jsonobj.accumulate("ch",s);
+        json_to_strings.add(jsonobj);//新增
+        wfileopen("translation.txt");
+        addtext(string_to_json.toString()); // play 2000 games of craps
+        wclosefile();
+    }
 }

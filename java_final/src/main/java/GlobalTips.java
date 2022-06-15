@@ -1,22 +1,33 @@
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
-import java.io.FileNotFoundException;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Formatter;
-import java.util.FormatterClosedException;
+import java.util.*;
 import java.util.Timer;
-import java.util.TimerTask;
+import java.util.Formatter;
+import java.util.Scanner;
 
-public class GlobalTips extends JFrame implements ClipboardHandler.EntryListener{//單字模式小框框
+public class GlobalTips extends JFrame implements ClipboardHandler.EntryListener, ActionListener, KeyListener {//單字模式小框框
     private JTextArea aaa;//小框框內容
-    private static Formatter output;
+    private static Formatter  output;
+    private static FileWriter fw;
+    private static Scanner input;
     private DoIt doIt;
     JScrollPane scroll;
-
+    public String s;
+    public String d;
+    public static String readstr;
     private boolean open=false;
 
     class toDo extends TimerTask{//自動複製
@@ -38,22 +49,30 @@ public class GlobalTips extends JFrame implements ClipboardHandler.EntryListener
 
     @Override
     public void onCopy(String data){
-        String s="";
+        s="";
+        d=data;
         if(handler.transletable()&&!data.equals("")){
             try {
                 s=vocabulary.voca(data);//翻譯
             }catch (Exception e){               e.printStackTrace();
             }
             System.out.println("--Translated");
-            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yy/MM/dd HH:mm:ss");
-            openFile();
-            addRecords(dtf.format(LocalDateTime.now())+'\n'+data+'\n'+s+'\n'+'\n'); // play 2000 games of craps
-            closeFile();
+            //DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yy/MM/dd HH:mm:ss");
+            Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
+            //openFile();
+            //if(s!="抓的不是單字或選取到不是字母的符號,請重新選一次。")
+            // addRecords(dtf.format(LocalDateTime.now())+'\n'+data+'\n'+s+'\n'+'\n'); // play 2000 games of craps
+            //else addRecords(dtf.format(LocalDateTime.now())+'\n'+s+'\n'+'\n');
+            //closeFile();
             if(!open)return;
             aaa.setText(s);
+            double x=MouseInfo.getPointerInfo().getLocation().x;
+            double y=MouseInfo.getPointerInfo().getLocation().y;
+            if(x+this.getWidth()>screenSize.getWidth())x=screenSize.getWidth()-this.getWidth();
+            if(y+this.getHeight()> screenSize.getHeight())y=screenSize.getHeight()-this.getHeight();
             if(aaa.getText().equals(""))setVisible(false);
             else  {
-                setLocation(MouseInfo.getPointerInfo().getLocation().x,MouseInfo.getPointerInfo().getLocation().y);
+                setLocation((int)x,(int)y);
                 setVisible(true);}
         }
     }
@@ -69,14 +88,14 @@ public class GlobalTips extends JFrame implements ClipboardHandler.EntryListener
         aaa=new JTextArea("---",7,15);
         aaa.setLineWrap(true);
         Border border = BorderFactory.createLineBorder(new Color(230,200,0,255),5);
-        aaa.setFont(new Font("標楷體", Font.PLAIN, 20));
+        aaa.setFont(new Font("標楷體", Font.PLAIN, 18));
         aaa.setBorder(BorderFactory.createCompoundBorder(border,
                 BorderFactory.createEmptyBorder(10, 10, 10, 10)));
+        aaa.addKeyListener(this);
         scroll = new JScrollPane(aaa);
         this.getContentPane().add(scroll);
         add(scroll);
-
-
+        //aaa.setEnabled(false);
 
         pack();
 
@@ -140,39 +159,99 @@ public class GlobalTips extends JFrame implements ClipboardHandler.EntryListener
             super.timer.schedule(new toDo(),2000);
         }
     }
-    public static void openFile()
+    @Override
+    public void actionPerformed(ActionEvent e)
     {
+        if (e.getActionCommand().equals("儲存")) {
+            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yy/MM/dd HH:mm:ss");
+            readfileopen("vocabulary.txt");
+            JSONObject string_to_json
+                    =JSONObject.fromObject(readstr);
+            JSONObject json_to_data
+                    = string_to_json.getJSONObject("data");//data層
+            //System.out.println(json_to_data);
+            JSONArray json_to_strings = json_to_data.getJSONArray("pages");//page Array層
+            JSONObject jsonobj=new JSONObject();//創新
+            jsonobj.accumulate("date",dtf.format(LocalDateTime.now()));
+            jsonobj.accumulate("eg",d);
+            jsonobj.accumulate("ch",s);
+            json_to_strings.add(jsonobj);//新增
+            wfileopen("translation.txt");
+            addtext(string_to_json.toString()); // play 2000 games of craps
+            wclosefile();
+            /*if(s!="抓的不是單字或選取到不是字母的符號,請重新選一次。")
+                addtext(dtf.format(LocalDateTime.now())+'\n'+d+'\n'+s+'\n'+'\n'); // play 2000 games of craps
+            else addtext(dtf.format(LocalDateTime.now())+'\n'+s+'\n'+'\n');*/
+            wclosefile();
+        }
+    }
+    public static void wfileopen(String filename){//寫入開檔
         try {
-            FileWriter fw = new FileWriter("vocabulary", true);
+            fw = new FileWriter(filename, true);
             output = new Formatter(fw);
-        } catch (SecurityException securityException) {
-            System.err.println("Write permission denied. Terminating.");
-            System.exit(1); // terminate the program
-        } catch (FileNotFoundException fileNotFoundException) {
-            System.err.println("Error opening file. Terminating.");
-            System.exit(1); // terminate the program
-        } catch (IOException e) {
-            System.err.println("I/O error. Terminating.");
-            System.exit(1); // terminate the program
+        }
+        catch(IOException e){
+            System.out.println(e);
         }
     }
-
-    // add records to file
-    public static void addRecords(String s)
-    {
+    public static void readfileopen(String filename){//讀出
         try {
-            // output new record to file; assumes valid input
-            // TODO
-            output.format("%s",s);
-        } catch (FormatterClosedException formatterClosedException) {
-            System.err.println("Error writing to file. Terminating.");
+            input = new Scanner(Paths.get(filename));
+            readstr=input.nextLine();
         }
+        catch(IOException e){
+            System.out.println(e);
+        }
+        //input.next();//格式
+        rclosefile();
+    }
+    public static void addtext(String context){//寫入
+        //System.out.println("add\n"+context);
+        output.format("%s",context);
     }
 
-    // close file
-    public static void closeFile()
-    {
+    public static void wclosefile(){//關閉寫入
         if (output != null)
             output.close();
+    }
+
+    public static void rclosefile(){//關閉讀出
+        if (input != null)
+            input.close();
+    }
+    @Override
+    public void keyTyped(KeyEvent keyEvent) {
+
+    }
+
+    @Override
+    public void keyPressed(KeyEvent keyEvent) {
+        if (keyEvent.isControlDown()&&keyEvent.getKeyCode()==83){
+            save();
+            System.out.println("ctrl");
+        }
+    }
+
+    @Override
+    public void keyReleased(KeyEvent keyEvent) {
+
+    }
+    public void save(){
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yy/MM/dd HH:mm:ss");
+        readfileopen("translation.txt");
+        JSONObject string_to_json
+                =JSONObject.fromObject(readstr);
+        JSONObject json_to_data
+                = string_to_json.getJSONObject("data");//data層
+        //System.out.println(json_to_data);
+        JSONArray json_to_strings = json_to_data.getJSONArray("pages");//page Array層
+        JSONObject jsonobj=new JSONObject();//創新
+        jsonobj.accumulate("date",dtf.format(LocalDateTime.now()));
+        jsonobj.accumulate("eg",d);
+        jsonobj.accumulate("ch",s);
+        json_to_strings.add(jsonobj);//新增
+        wfileopen("translation.txt");
+        addtext(string_to_json.toString()); // play 2000 games of craps
+        wclosefile();
     }
 }
