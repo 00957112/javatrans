@@ -5,6 +5,8 @@ import java.awt.event.ActionEvent;
 import java.awt.*;
 import java.awt.Color;
 import javax.swing.*;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
@@ -19,7 +21,7 @@ import java.awt.datatransfer.StringSelection;
 import java.util.Timer;
 
 
-public class ClipboardFrame  extends JFrame implements ClipboardHandler.EntryListener,ActionListener {
+public class ClipboardFrame  extends JFrame implements ClipboardHandler.EntryListener, KeyListener {
     public boolean isFirst=false;
     private static Formatter  output;
     private static FileWriter fw;
@@ -34,6 +36,9 @@ public class ClipboardFrame  extends JFrame implements ClipboardHandler.EntryLis
     public String s;
     public String d;
     public static String readstr;
+
+
+
     class toDo extends TimerTask {//自動複製
         @Override
         public void run() {
@@ -58,6 +63,8 @@ public class ClipboardFrame  extends JFrame implements ClipboardHandler.EntryLis
         Border border = BorderFactory.createLineBorder(new Color(230,200,0,255),5);
         text.setFont(new Font("標楷體", Font.PLAIN,18));
         text.setLineWrap(true);
+        //
+        text.addKeyListener(this);
         text.setBorder(BorderFactory.createCompoundBorder(border,
                 BorderFactory.createEmptyBorder(10, 10, 10, 10)));
         scroll = new JScrollPane(text);
@@ -91,10 +98,10 @@ public class ClipboardFrame  extends JFrame implements ClipboardHandler.EntryLis
         }
         //DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yy/MM/dd HH:mm:ss");
         Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yy/MM/dd HH:mm:ss");
-        wfileopen("translation");
-        addtext(dtf.format(LocalDateTime.now())+'\n'+d+'\n'+s+'\n'+'\n'); // play 2000 games of craps
-        wclosefile();
+        //DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yy/MM/dd HH:mm:ss");
+       // wfileopen("translation");
+        //addtext(dtf.format(LocalDateTime.now())+'\n'+d+'\n'+s+'\n'+'\n'); // play 2000 games of craps
+       // wclosefile();
         if(!open)return;
         text.setText(s);
         double x=MouseInfo.getPointerInfo().getLocation().x;
@@ -104,7 +111,7 @@ public class ClipboardFrame  extends JFrame implements ClipboardHandler.EntryLis
         setLocation((int)x,(int)y);
         setVisible(true);
     }
-    @Override
+   /* @Override
     public void actionPerformed(ActionEvent e)
     {
         if (e.getActionCommand().equals("儲存")) {
@@ -125,7 +132,7 @@ public class ClipboardFrame  extends JFrame implements ClipboardHandler.EntryLis
             addtext(string_to_json.toString()); // play 2000 games of craps
             wclosefile();
         }
-    }
+    }*/
 
     public static void main(String[] args) {//how to use
         try {                                   ///**********must!!!!!
@@ -171,7 +178,7 @@ public class ClipboardFrame  extends JFrame implements ClipboardHandler.EntryLis
 
     public static void wfileopen(String filename){//寫入開檔
         try {
-            fw = new FileWriter(filename, true);
+            fw = new FileWriter(filename, false);
             output = new Formatter(fw);
         }
         catch(IOException e){
@@ -213,11 +220,47 @@ public class ClipboardFrame  extends JFrame implements ClipboardHandler.EntryLis
         @Override
         void setToDo() {
             timer=new Timer();
-            super.timer.schedule(new ClipboardFrame.toDo(),2000);
+            super.timer.schedule(new ClipboardFrame.toDo(),1500);
         }
     }
 
     // close file
+    @Override
+    public void keyTyped(KeyEvent keyEvent) {
 
+    }
 
+    @Override
+    public void keyPressed(KeyEvent keyEvent) {
+        if (keyEvent.isControlDown()&&keyEvent.getKeyCode()==83){
+            save();
+            System.out.println("ctrl");
+        }
+    }
+
+    @Override
+    public void keyReleased(KeyEvent keyEvent) {
+
+    }
+    public void save(){
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yy/MM/dd HH:mm:ss");
+        readfileopen("translation.txt");
+        JSONObject string_to_json
+                =JSONObject.fromObject(readstr);
+        JSONObject json_to_data
+                = string_to_json.getJSONObject("data");//data層
+        System.out.println(json_to_data);
+        JSONArray json_to_strings = json_to_data.getJSONArray("pages");//page Array層
+        JSONObject jsonobj=new JSONObject();//創新
+        jsonobj.accumulate("date",dtf.format(LocalDateTime.now()));
+        jsonobj.accumulate("eg",d);
+        jsonobj.accumulate("ch",s);
+        System.out.println(jsonobj);
+        json_to_strings.add(jsonobj);//新增
+        System.out.println(json_to_strings);
+        System.out.println(string_to_json);
+        wfileopen("translation.txt");
+        addtext(string_to_json.toString()); // play 2000 games of craps
+        wclosefile();
+    }
 }
