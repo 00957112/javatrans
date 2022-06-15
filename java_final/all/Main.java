@@ -25,11 +25,14 @@ public class Main extends javax.swing.JFrame implements ActionListener {
     public Main() {
 
         super("類即時翻譯器");
-        wfileopen("translation");
-        addtext("{\"date\":{\"pages\":[]},\"errcode\":0}");
+        readfileopen("translation.txt");
+        wfileopen("translation.txt");
+        //System.out.println(readstr);
+        if(readstr==null) addtext("{\"data\":{\"pages\":[]},\"errcode\":0}");
         wclosefile();
-        wfileopen("vocabulary");
-        addtext("{\"date\":{\"pages\":[]},\"errcode\":0}");
+        readfileopen("vocabulary.txt");
+        wfileopen("vocabulary.txt");
+        if(readstr==null) addtext("{\"data\":{\"pages\":[]},\"errcode\":0}");
         wclosefile();
         initComponents();
         panel.setBackground(new Color(255, 255, 255));
@@ -70,8 +73,10 @@ public class Main extends javax.swing.JFrame implements ActionListener {
     public void actionPerformed(ActionEvent e)
     {
         if (e.getActionCommand().equals("查詢紀錄")) {
-            /*JSONObject string_to_json
-                    =JSONObject.fromObject("translation");
+            readfileopen("translation.txt");
+            JSONObject string_to_json
+                    =JSONObject.fromObject(readstr);
+            //System.out.println(string_to_json);
             JSONObject json_to_data
                     = string_to_json.getJSONObject("data");//data層
             //System.out.println(json_to_data);
@@ -80,13 +85,30 @@ public class Main extends javax.swing.JFrame implements ActionListener {
                 JSONObject json_to_string = JSONObject.fromObject(object);
                 json_to_string.get("pages");
                 ans+=json_to_string.get("date")+"\n"+json_to_string.get("eg")+"\n"+json_to_string.get("ch")+'\n';
-            }*/
-            String aaa="aaaaaaa"+"\n"+"aaa"+"\n"+"sss"+"\n"+"aaa"+"\n";
-
-            RFrame fr = new RFrame(aaa);
-            fr.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-            fr.setSize(350, 100);
-            fr.setVisible(true);
+            }
+            readfileopen("vocabular.txt");
+            string_to_json
+                    =JSONObject.fromObject(readstr);
+            //System.out.println(string_to_json);
+            json_to_data
+                    = string_to_json.getJSONObject("data");//data層
+            //System.out.println(json_to_data);
+            json_to_strings = json_to_data.getJSONArray("pages");//page Array層
+            for (Object object : json_to_strings) {//讀
+                JSONObject json_to_string = JSONObject.fromObject(object);
+                json_to_string.get("pages");
+                ans+=json_to_string.get("date")+"\n"+json_to_string.get("eg")+"\n"+json_to_string.get("ch")+'\n';
+            }
+            //String aaa="aaaaaaa"+"\n"+"aaa"+"\n"+"sss"+"\n"+"aaa"+"\n";
+            if(ans!="")
+            {
+                RFrame fr = new RFrame(ans);
+                fr.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                fr.setSize(350, 100);
+                fr.setVisible(true);
+            }
+            else JOptionPane.showMessageDialog(null, "還沒有查詢紀錄",
+                    "Message!", JOptionPane.PLAIN_MESSAGE);
             //把顯示紀錄的東東放這裡
         }
     }
@@ -200,10 +222,11 @@ public class Main extends javax.swing.JFrame implements ActionListener {
             System.out.println(e);
         }
     }
-    public static void readfileopen(String filename){//讀出
+    public static void readfileopen(String filename){//讀
         try {
             input = new Scanner(Paths.get(filename));
-            readstr=input.nextLine();
+            if(input.hasNext())
+                readstr=input.nextLine();
         }
         catch(IOException e){
             System.out.println(e);
