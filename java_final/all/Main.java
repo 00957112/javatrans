@@ -84,9 +84,10 @@ public class Main extends javax.swing.JFrame implements ActionListener {
             for (Object object : json_to_strings) {//讀
                 JSONObject json_to_string = JSONObject.fromObject(object);
                 json_to_string.get("pages");
-                ans+=json_to_string.get("date")+"\n"+json_to_string.get("eg")+"\n"+json_to_string.get("ch")+'\n';
+                ans+=json_to_string.get("date")+"\n"+json_to_string.get("eg")+"\n"+json_to_string.get("ch")+'\n'+'\n';
             }
-            readfileopen("vocabular.txt");
+            ans+="--------------------------------------------------------------------------------------------------------------------------------------------\n";
+            readfileopen("vocabulary.txt");
             string_to_json
                     =JSONObject.fromObject(readstr);
             //System.out.println(string_to_json);
@@ -97,14 +98,14 @@ public class Main extends javax.swing.JFrame implements ActionListener {
             for (Object object : json_to_strings) {//讀
                 JSONObject json_to_string = JSONObject.fromObject(object);
                 json_to_string.get("pages");
-                ans+=json_to_string.get("date")+"\n"+json_to_string.get("eg")+"\n"+json_to_string.get("ch")+'\n';
+                ans+=json_to_string.get("date")+"\n"+json_to_string.get("eg")+"\n"+json_to_string.get("ch")+'\n'+'\n';
             }
-            //String aaa="aaaaaaa"+"\n"+"aaa"+"\n"+"sss"+"\n"+"aaa"+"\n";
+
             if(ans!="")
             {
                 RFrame fr = new RFrame(ans);
                 fr.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-                fr.setSize(350, 100);
+                fr.setSize(700, 500);
                 fr.setVisible(true);
             }
             else JOptionPane.showMessageDialog(null, "還沒有查詢紀錄",
