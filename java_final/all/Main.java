@@ -5,17 +5,32 @@ import java.awt.event.ActionEvent;
 import java.awt.*;
 import java.awt.Color;
 import javax.swing.*;
-
-
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Formatter;
+import java.nio.file.Paths;
+import java.util.Scanner;
+import net.sf.json.*;
 public class Main extends javax.swing.JFrame implements ActionListener {
 
     /**
      * Creates new form Main
      */
     public static JButton b1;
+    private static Formatter  output;
+    private static FileWriter fw;
+    private static Scanner input;
+    public static String readstr;
+    String ans="";
     public Main() {
 
         super("類即時翻譯器");
+        wfileopen("translation");
+        addtext("{\"date\":{\"pages\":[]},\"errcode\":0}");
+        wclosefile();
+        wfileopen("vocabulary");
+        addtext("{\"date\":{\"pages\":[]},\"errcode\":0}");
+        wclosefile();
         initComponents();
         panel.setBackground(new Color(255, 255, 255));
         //ClipboardFrame test=new ClipboardFrame();
@@ -55,6 +70,18 @@ public class Main extends javax.swing.JFrame implements ActionListener {
     public void actionPerformed(ActionEvent e)
     {
         if (e.getActionCommand().equals("查詢紀錄")) {
+            JSONObject string_to_json
+                    =JSONObject.fromObject("translation");
+            JSONObject json_to_data
+                    = string_to_json.getJSONObject("data");//data層
+            //System.out.println(json_to_data);
+            JSONArray json_to_strings = json_to_data.getJSONArray("pages");//page Array層
+            for (Object object : json_to_strings) {//讀
+                JSONObject json_to_string = JSONObject.fromObject(object);
+                json_to_string.get("pages");
+                ans+=json_to_string.get("date")+"\n"+json_to_string.get("eg")+"\n"+json_to_string.get("ch")+'\n';
+            }
+
             //把顯示紀錄的東東放這裡
         }
     }
@@ -77,7 +104,12 @@ public class Main extends javax.swing.JFrame implements ActionListener {
         text2.setFont(new Font("Serif", Font.PLAIN, 14));
         text2.setEnabled(false);
         text2.setBackground(Color.WHITE);
-        String s="歡迎來到類即時翻譯器~此翻譯器有兩種模式!\n打開開關即為翻譯模式\n關閉開關即為單字模式\n點擊查詢紀錄可查看先前翻譯的結果";
+        String s="歡迎來到類即時翻譯器~此翻譯器有兩種模式!\n打開開關即為翻譯模式\n" +
+                "關閉開關即為單字模式\n點擊查詢紀錄可查看先前翻譯的結果\n" +
+                "翻譯模式:選取要翻譯的文字區段,按住3秒即可\n"+
+                "單字模式:選取想要查詢得單字,按住3秒即可\n"+
+                "若無法選取完後再次點擊,按下ctrl+c也可達到一樣的效果\n"+
+                "若想把顯示框關閉,點擊顯示框外的任一地方即可";
         text2.setText(s);
         JPanel p1=new JPanel();
         JPanel p2=new JPanel();
@@ -154,7 +186,40 @@ public class Main extends javax.swing.JFrame implements ActionListener {
             }
         });
     }
+    public static void wfileopen(String filename){//寫入開檔
+        try {
+            fw = new FileWriter(filename, true);
+            output = new Formatter(fw);
+        }
+        catch(IOException e){
+            System.out.println(e);
+        }
+    }
+    public static void readfileopen(String filename){//讀出
+        try {
+            input = new Scanner(Paths.get(filename));
+            readstr=input.nextLine();
+        }
+        catch(IOException e){
+            System.out.println(e);
+        }
+        //input.next();//格式
+        rclosefile();
+    }
+    public static void addtext(String context){//寫入
+        //System.out.println("add\n"+context);
+        output.format("%s",context);
+    }
 
+    public static void wclosefile(){//關閉寫入
+        if (output != null)
+            output.close();
+    }
+
+    public static void rclosefile(){//關閉讀出
+        if (input != null)
+            input.close();
+    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel panel;
     private switchbutton switchButton2;
