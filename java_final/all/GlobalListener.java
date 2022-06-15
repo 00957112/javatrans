@@ -50,7 +50,7 @@ public abstract class GlobalListener extends MouseAdapter implements NativeMouse
 
     public void nativeMouseClicked(NativeMouseEvent e) {
         //unToDo();
-        System.out.println("Mouse Clicked: " + e.getClickCount());
+        //System.out.println("Mouse Clicked: " + e.getClickCount());
     }
 
     public void nativeMousePressed(NativeMouseEvent e) {
