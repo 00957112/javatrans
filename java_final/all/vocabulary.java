@@ -49,9 +49,9 @@ public class vocabulary {
                 id++;
             }}
             catch (IndexOutOfBoundsException eee){//終止例外
-                ans+="end";//可換
+                //可換
             }
-            System.out.println(ans);
+            //System.out.println(ans);
             return ans;
         }
 
