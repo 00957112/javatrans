@@ -70,7 +70,7 @@ public class Main extends javax.swing.JFrame implements ActionListener {
     public void actionPerformed(ActionEvent e)
     {
         if (e.getActionCommand().equals("查詢紀錄")) {
-            JSONObject string_to_json
+            /*JSONObject string_to_json
                     =JSONObject.fromObject("translation");
             JSONObject json_to_data
                     = string_to_json.getJSONObject("data");//data層
@@ -80,8 +80,13 @@ public class Main extends javax.swing.JFrame implements ActionListener {
                 JSONObject json_to_string = JSONObject.fromObject(object);
                 json_to_string.get("pages");
                 ans+=json_to_string.get("date")+"\n"+json_to_string.get("eg")+"\n"+json_to_string.get("ch")+'\n';
-            }
+            }*/
+            String aaa="aaaaaaa"+"\n"+"aaa"+"\n"+"sss"+"\n"+"aaa"+"\n";
 
+            RFrame fr = new RFrame(aaa);
+            fr.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            fr.setSize(350, 100);
+            fr.setVisible(true);
             //把顯示紀錄的東東放這裡
         }
     }
