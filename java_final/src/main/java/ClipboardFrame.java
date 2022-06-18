@@ -29,7 +29,7 @@ public class ClipboardFrame  extends JFrame implements ClipboardHandler.EntryLis
     private final JTextArea text;
     JScrollPane scroll;
     private static Clipboard clip=Toolkit.getDefaultToolkit().getSystemClipboard();
-    private  GlobalListener globalListener;
+    private  AfterSeconds afterSeconds;//***
     private boolean open=false;
     private ClipboardHandler handler;
     public static JButton b1;
@@ -158,9 +158,9 @@ public class ClipboardFrame  extends JFrame implements ClipboardHandler.EntryLis
         handler.setEntryListener(this);
         handler.run();
         //全域滑鼠事件設定
-        globalListener=new DoIt();
-        globalListener.preAssignment();
-        text.addFocusListener(globalListener);
+        afterSeconds=new DoIt();//***
+        afterSeconds.preAssignment();//***
+        text.addFocusListener(afterSeconds);//***
         if(isFirst)setVisible(true);
         else isFirst=true;
     }
@@ -169,8 +169,8 @@ public class ClipboardFrame  extends JFrame implements ClipboardHandler.EntryLis
         isFirst=false;
         try {
             open=false;
-            globalListener.close();
-            text.removeFocusListener(globalListener);
+            afterSeconds.close();//***
+            text.removeFocusListener(afterSeconds);//***
             this.setVisible(false);
 
         }catch (Exception e){}
@@ -211,7 +211,7 @@ public class ClipboardFrame  extends JFrame implements ClipboardHandler.EntryLis
             input.close();
     }
 
-    class DoIt extends GlobalListener{//自動複製
+    class DoIt extends AfterSeconds{//自動複製//***
 
         @Override
         void unToDo() {
