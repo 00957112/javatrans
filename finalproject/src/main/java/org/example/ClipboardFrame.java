@@ -18,7 +18,8 @@ public class ClipboardFrame  extends JFrame implements ClipboardHandler.EntryLis
     private final JTextArea text;
     JScrollPane scroll;
     private static Clipboard clip=Toolkit.getDefaultToolkit().getSystemClipboard();
-    private  GlobalListener globalListener;
+    //private  GlobalListener globalListener;
+    private  AfterSeconds afterSeconds;//***
     private boolean open=false;
     private ClipboardHandler handler;
     public static JButton b1;
@@ -51,20 +52,17 @@ public class ClipboardFrame  extends JFrame implements ClipboardHandler.EntryLis
         Border border = BorderFactory.createLineBorder(new Color(230,200,0,255),5);
         text.setFont(new Font("標楷體", Font.PLAIN,18));
         text.setLineWrap(true);
-        //
+
         text.addKeyListener(this);
         text.setBorder(BorderFactory.createCompoundBorder(border,
                 BorderFactory.createEmptyBorder(10, 10, 10, 10)));
         scroll = new JScrollPane(text);
         scroll.setSize(600,200);
 
-        //text.add(b1);
         this.getContentPane().add(scroll,BorderLayout.CENTER);
 
-        //UI frame設定
         this.setSize(650,200);
         this.setAlwaysOnTop(true);
-        //text.setEnabled(false);
 
         handler=new ClipboardHandler();
 
@@ -119,9 +117,9 @@ public class ClipboardFrame  extends JFrame implements ClipboardHandler.EntryLis
         handler.setEntryListener(this);
         handler.run();
         //全域滑鼠事件設定
-        globalListener=new DoIt();
-        globalListener.preAssignment();
-        text.addFocusListener(globalListener);
+        afterSeconds=new DoIt();//***
+        afterSeconds.preAssignment();//***
+        text.addFocusListener(afterSeconds);//***
         if(isFirst)setVisible(true);
         else isFirst=true;
     }
@@ -130,14 +128,14 @@ public class ClipboardFrame  extends JFrame implements ClipboardHandler.EntryLis
         isFirst=false;
         try {
             open=false;
-            globalListener.close();
-            text.removeFocusListener(globalListener);
+            afterSeconds.close();//***
+            text.removeFocusListener(afterSeconds);//***
             this.setVisible(false);
 
         }catch (Exception e){}
     }
 
-    class DoIt extends GlobalListener{//自動複製
+    class DoIt extends AfterSeconds{//自動複製
 
         @Override
         void unToDo() {
@@ -146,15 +144,12 @@ public class ClipboardFrame  extends JFrame implements ClipboardHandler.EntryLis
         @Override
         void setToDo() {
             timer=new Timer();
-            super.timer.schedule(new ClipboardFrame.toDo(),1500);
+            super.timer.schedule(new ClipboardFrame.toDo(),500);
         }
     }
 
-    // close file
     @Override
-    public void keyTyped(KeyEvent keyEvent) {
-
-    }
+    public void keyTyped(KeyEvent keyEvent) {}
 
     @Override
     public void keyPressed(KeyEvent keyEvent) {
@@ -165,9 +160,7 @@ public class ClipboardFrame  extends JFrame implements ClipboardHandler.EntryLis
     }
 
     @Override
-    public void keyReleased(KeyEvent keyEvent) {
-
-    }
+    public void keyReleased(KeyEvent keyEvent) {}
     public void save(){
         FileHandler.jsonwrite("translation.txt",d,s);
     }

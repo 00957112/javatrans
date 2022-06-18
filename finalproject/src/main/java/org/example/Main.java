@@ -41,7 +41,6 @@ public class Main extends javax.swing.JFrame implements ActionListener {
                     test.close();
                     ma.start();
                     panel.setBackground(new Color(255, 255, 255));//這是原本設置選後要改變的背景顏色
-                    //JOptionPane.showMessageDialog(null,"No, it cannot be larger!");
                 } else {
                     ma.close();
                     test.start();
@@ -100,9 +99,8 @@ public class Main extends javax.swing.JFrame implements ActionListener {
         text2.setBackground(Color.WHITE);
         String s="歡迎來到類即時翻譯器~此翻譯器有兩種模式!\n打開開關即為翻譯模式\n" +
                 "關閉開關即為單字模式\n點擊查詢紀錄可查看先前翻譯的結果\n" +
-                "翻譯模式:選取要翻譯的文字區段,按住3秒即可\n"+
-                "單字模式:選取想要查詢得單字,按住3秒即可\n"+
-                "若無法選取完後再次點擊,按下ctrl+c也可達到一樣的效果\n"+
+                "選取要翻譯的文字區段後游標停放在想顯示的地方等候翻譯顯示\n"+
+                "按下ctrl+c也可達到一樣的效果\n"+
                 "若想把顯示框關閉,點擊顯示框外的任一地方即可\n"+
                 "按下ctrl+s可儲存查詢結果";
         text2.setText(s);

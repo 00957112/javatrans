@@ -1,7 +1,5 @@
 package org.example;
 import java.awt.datatransfer.*;
-import java.util.Scanner;
-import javax.swing.*;
 import java.awt.Toolkit;
 
 public class ClipboardHandler implements ClipboardOwner {

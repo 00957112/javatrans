@@ -46,6 +46,10 @@ public class vocabulary {
         {
             e.printStackTrace();
         }
+        catch (IndexOutOfBoundsException eee){//終止例外
+            System.out.println(eee);
+            return "無結果。";
+        }
         return vocabularytxet;
     }
 }

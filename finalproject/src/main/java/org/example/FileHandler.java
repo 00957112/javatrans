@@ -36,7 +36,6 @@ public class FileHandler {
         catch(IOException e){
             System.out.println(e);
         }
-        //input.next();//格式
         rclosefile();
         return readstr;
     }
@@ -71,6 +70,7 @@ public class FileHandler {
             json_to_string.get("pages");
             recordText+=json_to_string.get("date")+"\n"+json_to_string.get("eg")+"\n"+json_to_string.get("ch")+'\n'+'\n';
         }
+
         return recordText;
 
     }
@@ -92,7 +92,7 @@ public class FileHandler {
         jsonobj.accumulate("ch",s);
         json_to_strings.add(jsonobj);//新增
 
-        writeFileOpen("vocabulary.txt",string_to_json.toString(),false);
+        writeFileOpen(filename,string_to_json.toString(),false);
 
     }
 }

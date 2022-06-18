@@ -42,7 +42,7 @@ public class GlobalTips extends JFrame implements ClipboardHandler.EntryListener
                 s=vocabulary.voca(data);//翻譯
             }catch (Exception e){               e.printStackTrace();
             }
-            System.out.println("--Translated");
+            //System.out.println("--Translated");
             Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
 
             if(!open)return;
@@ -76,7 +76,6 @@ public class GlobalTips extends JFrame implements ClipboardHandler.EntryListener
         scroll = new JScrollPane(aaa);
         this.getContentPane().add(scroll);
         add(scroll);
-        //aaa.setEnabled(false);
 
         pack();
 
@@ -119,7 +118,7 @@ public class GlobalTips extends JFrame implements ClipboardHandler.EntryListener
         @Override
         void setToDo() {
             timer=new Timer();
-            super.timer.schedule(new toDo(),1500);
+            super.timer.schedule(new toDo(),500);
         }
     }
 
@@ -137,9 +136,7 @@ public class GlobalTips extends JFrame implements ClipboardHandler.EntryListener
     }
 
     @Override
-    public void keyReleased(KeyEvent keyEvent) {
-
-    }
+    public void keyReleased(KeyEvent keyEvent) {}
     public void save(){
         FileHandler.jsonwrite("vocabulary.txt",d,s);
     }

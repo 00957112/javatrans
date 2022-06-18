@@ -8,7 +8,7 @@ public class RecordFrame extends JFrame{
         super("紀錄");
         JTextArea txt=new JTextArea();
         txt.setFont(new Font("Serif", Font.PLAIN, 14));
-        txt.setEnabled(false);
+        //txt.setEnabled(false);
         txt.setBackground(Color.WHITE);
         txt.setText(rc);
         JScrollPane scroll;
@@ -16,4 +16,3 @@ public class RecordFrame extends JFrame{
         getContentPane().add(scroll);
     }
 }
-//

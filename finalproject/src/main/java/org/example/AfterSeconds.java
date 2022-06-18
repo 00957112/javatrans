@@ -15,35 +15,20 @@ import java.util.TimerTask;
 /** 單字listener*/
 abstract public class AfterSeconds implements NativeMouseInputListener,FocusListener {//單字模式小框框全域滑鼠事件
     protected Timer timer;
-
     private boolean isSelect=false; //#小框框出現條件優化
-
     abstract void unToDo();
     abstract void setToDo();
-
     private AfterSeconds afterSeconds;
-
-    public AfterSeconds(){
-
-    }
+    public AfterSeconds(){}
     //#小框框消失事件修正-
 
     @Override
     public void focusGained(FocusEvent e){}
     @Override
-    public void focusLost(FocusEvent e){
-        unToDo();
-    }
-    public void nativeMouseClicked(NativeMouseEvent e) {
-        //unToDo();
-        //System.out.println("Mouse Clicked: " + e.getClickCount());
-    }
+    public void focusLost(FocusEvent e){unToDo();}
+    public void nativeMouseClicked(NativeMouseEvent e) {}
 
-    public void nativeMousePressed(NativeMouseEvent e) {
-        //setToDo();
-        //if(showtime!=null)timer.schedule(,3000);
-        //System.out.println("Mouse Pressed: " + e.getButton());
-    }
+    public void nativeMousePressed(NativeMouseEvent e) {}
 
     public void nativeMouseReleased(NativeMouseEvent e) {
         //#小框框出現條件優化
@@ -51,30 +36,22 @@ abstract public class AfterSeconds implements NativeMouseInputListener,FocusList
             setToDo();
             isSelect=false;
         }
-        //System.out.println("Mouse Released: " + e.getButton());
     }
 
-    public void nativeMouseMoved(NativeMouseEvent e) {
-        //System.out.println("Mouse Moved: " + e.getX() + ", " + e.getY());
-    }
+    public void nativeMouseMoved(NativeMouseEvent e) {}
     //#小框框消失事件修正-選下一個消失 #小框框出現條件優化
     public void nativeMouseDragged(NativeMouseEvent e) {
         isSelect=true;
-        //unToDo();
-        //System.out.println("Mouse Dragged: " + e.getX() + ", " + e.getY());
     }
     public void preAssignment(){
-
         // Construct the example object.
         // Add the appropriate listeners.
         GlobalScreen.addNativeMouseListener(this);
         GlobalScreen.addNativeMouseMotionListener(this);
         afterSeconds=this;
-        //setToDo();
     }
     public void close(){
         try{
-
             GlobalScreen.removeNativeMouseListener(afterSeconds);
             GlobalScreen.removeNativeMouseMotionListener(afterSeconds);
 
@@ -82,7 +59,5 @@ abstract public class AfterSeconds implements NativeMouseInputListener,FocusList
             e.printStackTrace();
         }
     }
-    public static <GlobalMouseListenerExample> void main(String[] args) {
-        //preAssignment();
-    }
+    public static <GlobalMouseListenerExample> void main(String[] args) {}
 }
