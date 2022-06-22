@@ -97,8 +97,8 @@ public class Main extends javax.swing.JFrame implements ActionListener {
         text2.setFont(new Font("Serif", Font.PLAIN, 14));
         text2.setEnabled(false);
         text2.setBackground(Color.WHITE);
-        String s="歡迎來到類即時翻譯器~此翻譯器有兩種模式!\n打開開關即為翻譯模式\n" +
-                "關閉開關即為單字模式\n點擊查詢紀錄可查看先前翻譯的結果\n" +
+        String s="歡迎來到類即時翻譯器~此翻譯器有兩種模式!\n關閉開關即為翻譯模式\n" +
+                "打開開關即為單字模式\n點擊查詢紀錄可查看先前翻譯的結果\n" +
                 "選取要翻譯的文字區段後游標停放在想顯示的地方等候翻譯顯示\n"+
                 "按下ctrl+c也可達到一樣的效果\n"+
                 "若想把顯示框關閉,點擊顯示框外的任一地方即可\n"+
